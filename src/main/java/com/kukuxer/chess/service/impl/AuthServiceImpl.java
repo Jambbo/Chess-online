@@ -29,24 +29,25 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public JwtResponse login(JwtRequest loginRequest) {
+    public JwtResponse login(JwtRequest loginRequest) throws AccessDeniedException {
         JwtResponse jwtResponse = new JwtResponse();
         try{
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword())
             );
             User user = userService.getByUsername(loginRequest.getUsername());
-            jwtResponse.setId(user.getById());
+            jwtResponse.setId(user.getId());
             jwtResponse.setUsername(jwtTokenProvider.createAccessToken(user.getId(),user.getUsername(),user.getRoles()));
             jwtResponse.setRefreshToken(jwtTokenProvider.createRefreshToken(user.getId(),user.getUsername()));
+            return jwtResponse;
         }catch(Exception e){
             e.printStackTrace();
-            throw new AccessDeniedException();
+            throw new AccessDeniedException("");
         }
     }
 
     @Override
-    public JwtResponse refresh(String refreshToken) {
+    public JwtResponse refresh(String refreshToken) throws AccessDeniedException {
         return jwtTokenProvider.refreshUserTokens(refreshToken);
     }
 }

@@ -13,5 +13,7 @@ import java.util.Optional;
 
 public interface UserService {
 
-    User registerUser(UserDto userDTO);
+    User create(User user);
+    User getById(Long id);
+    User getByUsername(String username);
 }

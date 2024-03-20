@@ -13,7 +13,7 @@ public class JwtEntity implements UserDetails {
 
     private Long id;
     private final String username;
-    private final String name;
+    private final String email;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
 

@@ -9,6 +9,7 @@ import com.kukuxer.chess.web.mappers.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -20,22 +21,35 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
+
     @Override
-    public User registerUser(UserDto userDto) {
-        User user = userMapper.toEntity(userDto);
+    @Transactional
+    public User create(User user) {
         if(userRepository.findByUsername(user.getUsername()).isPresent()){
-            throw new IllegalStateException("Username '" + user.getUsername() + "' is already taken.");
+            throw new IllegalStateException("User already exists.");
         }
-        try {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            Set<Role> roles = Set.of(Role.USER);
-            user.setRoles(roles);
-            userRepository.save(user);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to register user: " + e.getMessage(), e);
+        if(!user.getPassword().equals(user.getPasswordConfirmation())){
+            throw new IllegalStateException("Password and password confirmation do not match.");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Set<Role> roles = Set.of(Role.USER);
+        user.setRoles(roles);
+        userRepository.save(user);
         return user;
     }
 
+    @Override
+    public User getById(Long id) {
+        return userRepository.findById(id).orElseThrow(
+                RuntimeException::new
+        );
+    }
+
+    @Override
+    public User getByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(
+                ()->new RuntimeException("User not found.")
+        );
+    }
 
 }
