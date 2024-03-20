@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -35,6 +36,11 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "users_roles")
+    @Column(name = "role")
+    @Enumerated(value = EnumType.STRING)
+    private Set<Role> roles;
 
 
 }
