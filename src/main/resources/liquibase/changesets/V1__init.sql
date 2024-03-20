@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS match_history
     id          SERIAL PRIMARY KEY,
     move_number INT NOT NULL ,
     user_id     INT,
-    board       INT[][],
+    board       JSON NOT NULL,
     match_id    INT NOT NULL ,
     move_timestamp timestamp DEFAULT current_timestamp,
 

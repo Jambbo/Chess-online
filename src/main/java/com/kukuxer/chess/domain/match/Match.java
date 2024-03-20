@@ -22,15 +22,15 @@ public class Match {
     private Long id;
 
     @ManyToOne
-    @Column(name = "sender_id")
+    @JoinColumn(name = "sender_id")
     private User sender;
 
     @ManyToOne
-    @Column(name = "receiver_id")
+    @JoinColumn(name = "receiver_id")
     private User receiver;
 
     @ManyToOne
-    @Column(name = "winner_id")
+    @JoinColumn(name = "winner_id")
     private User winner;
 
     @Column(name = "start_time")

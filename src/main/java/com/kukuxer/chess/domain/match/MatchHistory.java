@@ -25,10 +25,10 @@ public class MatchHistory {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ElementCollection
-    private int[][]  board;
+    @Column(name = "board")
+    private String boardAsString;
 
     @ManyToOne
     @JoinColumn(name = "match_id")
-    private Match matchId;
+    private Match match;
 }
