@@ -27,10 +27,6 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "password_confirmation")
-    @Transient
-    private String passwordConfirmation;
-
     @Column(name = "username")
     private String username;
 

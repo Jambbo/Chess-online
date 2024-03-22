@@ -9,6 +9,8 @@ import com.kukuxer.chess.web.auth.JwtRequest;
 import com.kukuxer.chess.web.auth.JwtResponse;
 import com.kukuxer.chess.web.dto.UserDto;
 import com.kukuxer.chess.web.mappers.UserMapper;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,7 +31,13 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public JwtResponse login(JwtRequest loginRequest) throws AccessDeniedException {
+    public JwtResponse login(JwtRequest loginRequest, HttpServletResponse response) throws AccessDeniedException {
+        Cookie cookie = new Cookie("user",loginRequest.getUsername());
+        cookie.setMaxAge(24*60*60);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+//        cookie.setSecure(true);
+        response.addCookie(cookie);
         JwtResponse jwtResponse = new JwtResponse();
         try{
             authenticationManager.authenticate(
@@ -37,7 +45,8 @@ public class AuthServiceImpl implements AuthService {
             );
             User user = userService.getByUsername(loginRequest.getUsername());
             jwtResponse.setId(user.getId());
-            jwtResponse.setUsername(jwtTokenProvider.createAccessToken(user.getId(),user.getUsername(),user.getRoles()));
+            jwtResponse.setUsername(user.getUsername());
+            jwtResponse.setAccessToken(jwtTokenProvider.createAccessToken(user.getId(),user.getUsername(),user.getRoles()));
             jwtResponse.setRefreshToken(jwtTokenProvider.createRefreshToken(user.getId(),user.getUsername()));
             return jwtResponse;
         }catch(Exception e){

@@ -2,10 +2,7 @@ package com.kukuxer.chess.domain.request;
 
 import com.kukuxer.chess.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
@@ -13,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "requests")
+@Builder
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

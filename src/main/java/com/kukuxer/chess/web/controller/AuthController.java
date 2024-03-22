@@ -7,6 +7,7 @@ import com.kukuxer.chess.web.auth.JwtRequest;
 import com.kukuxer.chess.web.auth.JwtResponse;
 import com.kukuxer.chess.web.dto.UserDto;
 import com.kukuxer.chess.web.mappers.UserMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.nio.file.AccessDeniedException;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @Validated
 @RequiredArgsConstructor
 public class AuthController {
@@ -27,15 +28,17 @@ public class AuthController {
     private final UserMapper userMapper;
 
     @PostMapping("/login")
-    public JwtResponse login (@Validated @RequestBody JwtRequest jwtRequest) throws AccessDeniedException {
-        return authService.login(jwtRequest);
+    public JwtResponse login (@Validated @RequestBody JwtRequest jwtRequest, HttpServletResponse response) throws AccessDeniedException {
+        return authService.login(jwtRequest,response);
     }
 
     @PostMapping("/register")
     public UserDto register(@Validated @RequestBody UserDto userDto) {
         User user = userMapper.toEntity(userDto);
         User createdUser = userService.create(user);
-        return userMapper.toDto(createdUser);
+        userDto.setPassword("secret");
+        userDto.setId(createdUser.getId());
+        return userDto;
     }
 
     @PostMapping("/refresh")

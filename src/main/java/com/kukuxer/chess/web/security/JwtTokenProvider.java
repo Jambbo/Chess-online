@@ -78,10 +78,10 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public JwtResponse refreshUserTokens(String refreshToken) throws AccessDeniedException {
+    public JwtResponse refreshUserTokens(String refreshToken) {
         JwtResponse jwtResponse = new JwtResponse();
         if(!validateToken(refreshToken)){
-            throw new AccessDeniedException("");
+            System.out.println("JwtTokenProvider 84 stroka");;
         }
         Long userId = Long.valueOf(getId(refreshToken));
         User user = userService.getById(userId);

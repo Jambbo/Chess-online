@@ -22,19 +22,25 @@ public class JwtTokenFilter extends GenericFilterBean {
     @Override
     @SneakyThrows
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        String bearerToken = ((HttpServletRequest)servletRequest).getHeader("Authorization");
-        if(bearerToken!=null && bearerToken.startsWith("Bearer ")){
-            bearerToken = bearerToken.substring(7);
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+        String bearerToken = httpRequest.getHeader("Authorization");
+
+        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
+            // Если заголовок отсутствует или не содержит токен, пропускаем запрос дальше
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
         }
-        try{
-            if(bearerToken !=null && jwtTokenProvider.validateToken(bearerToken)){
+
+        bearerToken = bearerToken.substring(7); // Удалить "Bearer " из заголовка
+        try {
+            if (jwtTokenProvider.validateToken(bearerToken)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(bearerToken);
-                if(authentication!=null){
+                if (authentication != null && authentication.getPrincipal() != null) { // Добавлена проверка на null
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
         }
-        filterChain.doFilter(servletRequest,servletResponse);
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 }
